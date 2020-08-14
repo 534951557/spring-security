@@ -25,7 +25,7 @@ jobs:
         run: |
           echo 'Content-type: application/json' --data '{"text": "Step [ '${GITHUB_JOB}' ] by commit owner '"$COMMIT_OWNER"' started for branch '${GITHUB_REF#refs/heads/}'"}'
           echo Step [${GITHUB_JOB}] by commit owner "$COMMIT_OWNER" started for branch ${GITHUB_REF#refs/heads/}
-          curl -X POST -H 'Content-type: application/json' --data '{"blocks":[{"type":"header","text":{"type":"plain_text","text":"Build started for commit '"$COMMIT_SHA"'"}},{"type":"context","elements":[{"type":"plain_text","text":"Author: '"$COMMIT_OWNER"'"}]}]}' "$SLACK_WEBHOOK_URL"
+          curl -X POST -H 'Content-type: application/json' --data '{"blocks":[{"type":"header","text":{"type":"plain_text","text":"Build started for commit '"$COMMIT_SHA"'"}},{"type":"section","text":{"type":"mrkdwn","text":"— _Author: '"$COMMIT_OWNER"'_"}}]}' "$SLACK_WEBHOOK_URL"
       - name: Set up JDK 8
         uses: actions/setup-java@v1
         with:
@@ -44,7 +44,7 @@ jobs:
       - name: Notify on failure
         if: ${{ failure() }}
         run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text": ":red_circle: Step *'${GITHUB_JOB}'* failed for branch '${GITHUB_REF#refs/heads/}'"}' "$SLACK_WEBHOOK_URL"
+          curl -X POST -H 'Content-type: application/json' --data '{"text": ":x: Step *'${GITHUB_JOB}'* failed for branch '${GITHUB_REF#refs/heads/}'"}' "$SLACK_WEBHOOK_URL"
   test_alternate_jdks:
     name: Test JDK 11 and 12
     runs-on: ubuntu-latest
@@ -72,7 +72,7 @@ jobs:
       - name: Notify on failure
         if: ${{ failure() }}
         run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text": ":red_circle: Step *'${GITHUB_JOB}'* failed for branch '${GITHUB_REF#refs/heads/}'"}' "$SLACK_WEBHOOK_URL"
+          curl -X POST -H 'Content-type: application/json' --data '{"text": ":x: Step *'${GITHUB_JOB}'* failed for branch '${GITHUB_REF#refs/heads/}'"}' "$SLACK_WEBHOOK_URL"
   snapshot_tests:
     name: Test against snapshots
     runs-on: ubuntu-latest
@@ -91,7 +91,7 @@ jobs:
       - name: Notify on failure
         if: ${{ failure() }}
         run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text": ":red_circle: Step *'${GITHUB_JOB}'* failed for branch '${GITHUB_REF#refs/heads/}'"}' "$SLACK_WEBHOOK_URL"
+          curl -X POST -H 'Content-type: application/json' --data '{"text": ":x: Step *'${GITHUB_JOB}'* failed for branch '${GITHUB_REF#refs/heads/}'"}' "$SLACK_WEBHOOK_URL"
   sonar:
     name: Static Code Analysis
     runs-on: ubuntu-latest
@@ -122,7 +122,7 @@ jobs:
       - name: Notify on failure
         if: ${{ failure() }}
         run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text": ":red_circle: Step *'${GITHUB_JOB}'* failed for branch '${GITHUB_REF#refs/heads/}'"}' "$SLACK_WEBHOOK_URL"
+          curl -X POST -H 'Content-type: application/json' --data '{"text": ":x: Step *'${GITHUB_JOB}'* failed for branch '${GITHUB_REF#refs/heads/}'"}' "$SLACK_WEBHOOK_URL"
   artifacts:
     name: Deploy Artifacts
     needs: [build, test_alternate_jdks, snapshot_tests, sonar]
@@ -152,7 +152,7 @@ jobs:
       - name: Notify on failure
         if: ${{ failure() }}
         run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text": ":red_circle: Step *'${GITHUB_JOB}'* failed for branch '${GITHUB_REF#refs/heads/}'"}' "$SLACK_WEBHOOK_URL"
+          curl -X POST -H 'Content-type: application/json' --data '{"text": ":x: Step *'${GITHUB_JOB}'* failed for branch '${GITHUB_REF#refs/heads/}'"}' "$SLACK_WEBHOOK_URL"
   docs:
     name: Deploy Docs
     needs: [build, test_alternate_jdks, snapshot_tests, sonar]
@@ -176,7 +176,7 @@ jobs:
       - name: Notify on failure
         if: ${{ failure() }}
         run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text": ":red_circle: Step *'${GITHUB_JOB}'* failed for branch '${GITHUB_REF#refs/heads/}'"}' "$SLACK_WEBHOOK_URL"
+          curl -X POST -H 'Content-type: application/json' --data '{"text": ":x: Step *'${GITHUB_JOB}'* failed for branch '${GITHUB_REF#refs/heads/}'"}' "$SLACK_WEBHOOK_URL"
   schema:
     name: Deploy Schema
     needs: [build, test_alternate_jdks, snapshot_tests, sonar]
@@ -200,7 +200,7 @@ jobs:
       - name: Notify on failure
         if: ${{ failure() }}
         run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text": ":red_circle: Step *'${GITHUB_JOB}'* failed for branch '${GITHUB_REF#refs/heads/}'"}' "$SLACK_WEBHOOK_URL"
+          curl -X POST -H 'Content-type: application/json' --data '{"text": ":x: Step *'${GITHUB_JOB}'* failed for branch '${GITHUB_REF#refs/heads/}'"}' "$SLACK_WEBHOOK_URL"
   notify_success:
     name: Notify on build success
     needs: [build, test_alternate_jdks, snapshot_tests, sonar, artifacts, docs, schema]
@@ -209,4 +209,4 @@ jobs:
       - uses: actions/checkout@v2
       - name: Notify on success
         run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text": ":green_circle: Build succeeded for branch '${GITHUB_REF#refs/heads/}'"}' "$SLACK_WEBHOOK_URL"
+          curl -X POST -H 'Content-type: application/json' --data '{"text": ":white_check_mark: Build succeeded for branch '${GITHUB_REF#refs/heads/}'"}' "$SLACK_WEBHOOK_URL"
