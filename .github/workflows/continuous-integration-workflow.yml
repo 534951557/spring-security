@@ -25,7 +25,7 @@ jobs:
         run: |
           echo 'Content-type: application/json' --data '{"text": "Step [ '${GITHUB_JOB}' ] by commit owner '"$COMMIT_OWNER"' started for branch '${GITHUB_REF#refs/heads/}'"}'
           echo Step [${GITHUB_JOB}] by commit owner "$COMMIT_OWNER" started for branch ${GITHUB_REF#refs/heads/}
-          curl -X POST -H 'Content-type: application/json' --data '{"blocks":[{"type":"section","text":{"type":"mrkdwn","text":"*Build started for commit '"$COMMIT_SHA"'* _by commit author '"$COMMIT_OWNER"'_"}},{"type":"divider"}]}' "$SLACK_WEBHOOK_URL"
+          curl -X POST -H 'Content-type: application/json' --data '{"blocks":[{"type":"header","text":{"type":"plain_text","text":"Build started for commit '"$COMMIT_SHA"'"}},{"type":"context","elements":[{"type":"plain_text","text":"Author: '"$COMMIT_OWNER"'"}]}]}' "$SLACK_WEBHOOK_URL"
       - name: Set up JDK 8
         uses: actions/setup-java@v1
         with:
