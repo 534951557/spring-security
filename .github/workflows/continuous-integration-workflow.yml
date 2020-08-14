@@ -41,7 +41,7 @@ jobs:
       - name: Notify on failure
         if: ${{ failure() }}
         run: |
-        curl -X POST -H 'Content-type: application/json' --data '{"text":"Test message from webhook"}' "$SLACK_WEBHOOK_URL"
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"Test message from webhook"}' "$SLACK_WEBHOOK_URL"
   test_alternate_jdks:
     name: Test JDK 11 and 12
     runs-on: ubuntu-latest
