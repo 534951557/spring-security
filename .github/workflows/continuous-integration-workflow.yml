@@ -13,6 +13,7 @@ env:
   GRADLE_ENTERPRISE_CACHE_PASSWORD: ${{ secrets.GRADLE_ENTERPRISE_CACHE_PASSWORD }}
   GRADLE_ENTERPRISE_SECRET_ACCESS_KEY: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
   COMMIT_OWNER: ${{ github.event.pusher.name }}
+  COMMIT_SHA: ${{ github.sha }}
 
 jobs:
   build:
@@ -24,7 +25,7 @@ jobs:
         run: |
           echo 'Content-type: application/json' --data '{"text": "Step [ '${GITHUB_JOB}' ] by commit owner '"$COMMIT_OWNER"' started for branch '${GITHUB_REF#refs/heads/}'"}'
           echo Step [${GITHUB_JOB}] by commit owner "$COMMIT_OWNER" started for branch ${GITHUB_REF#refs/heads/}
-          curl -X POST -H 'Content-type: application/json' --data '{"blocks":[{"type":"header","text":{"type":"plain_text","text":"CI build started for '${GITHUB_REF#refs/heads/}' branch","emoji":true}},{"type":"context","elements":[{"type":"plain_text","text":"Author: '"$COMMIT_OWNER"'","emoji":true}]}]}' "$SLACK_WEBHOOK_URL"
+          curl -X POST -H 'Content-type: application/json' --data '{"blocks":[{"type":"section","text":{"type":"mrkdwn","text":"*Build started for commit '"$COMMIT_SHA"'* _by commit author '"$COMMIT_OWNER"'_"}},{"type":"divider"}]}' "$SLACK_WEBHOOK_URL"
       - name: Set up JDK 8
         uses: actions/setup-java@v1
         with:
@@ -43,7 +44,7 @@ jobs:
       - name: Notify on failure
         if: ${{ failure() }}
         run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text": "Step [ '${GITHUB_JOB}' ] failed for branch '${GITHUB_REF#refs/heads/}'"}' "$SLACK_WEBHOOK_URL"
+          curl -X POST -H 'Content-type: application/json' --data '{"blocks":[{"type":"context","elements":[{"type":"mrkdwn","text":":red_circle: [ '${GITHUB_JOB}' ] step failed for commit '"$COMMIT_SHA"'"}]}]}' "$SLACK_WEBHOOK_URL"
   test_alternate_jdks:
     name: Test JDK 11 and 12
     runs-on: ubuntu-latest
@@ -71,7 +72,7 @@ jobs:
       - name: Notify on failure
         if: ${{ failure() }}
         run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text": "Step [ '${GITHUB_JOB}' ] failed for branch '${GITHUB_REF#refs/heads/}'"}' "$SLACK_WEBHOOK_URL"
+          curl -X POST -H 'Content-type: application/json' --data '{"blocks":[{"type":"context","elements":[{"type":"mrkdwn","text":":red_circle: [ '${GITHUB_JOB}' ] step failed for commit '"$COMMIT_SHA"'"}]}]}' "$SLACK_WEBHOOK_URL"
   snapshot_tests:
     name: Test against snapshots
     runs-on: ubuntu-latest
@@ -90,7 +91,7 @@ jobs:
       - name: Notify on failure
         if: ${{ failure() }}
         run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text": "Step [ '${GITHUB_JOB}' ] failed for branch '${GITHUB_REF#refs/heads/}'"}' "$SLACK_WEBHOOK_URL"
+          curl -X POST -H 'Content-type: application/json' --data '{"blocks":[{"type":"context","elements":[{"type":"mrkdwn","text":":red_circle: [ '${GITHUB_JOB}' ] step failed for commit '"$COMMIT_SHA"'"}]}]}' "$SLACK_WEBHOOK_URL"
   sonar:
     name: Static Code Analysis
     runs-on: ubuntu-latest
@@ -118,6 +119,10 @@ jobs:
           export GRADLE_ENTERPRISE_CACHE_PASSWORD="$GRADLE_ENTERPRISE_CACHE_PASSWORD"
           export GRADLE_ENTERPRISE_ACCESS_KEY="$GRADLE_ENTERPRISE_SECRET_ACCESS_KEY"
           ./gradlew sonarqube -PexcludeProjects='**/samples/**' -Dsonar.host.url="$SONAR_URL" -Dsonar.login="$SONAR_TOKEN" --stacktrace
+      - name: Notify on failure
+        if: ${{ failure() }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{"blocks":[{"type":"context","elements":[{"type":"mrkdwn","text":":red_circle: [ '${GITHUB_JOB}' ] step failed for commit '"$COMMIT_SHA"'"}]}]}' "$SLACK_WEBHOOK_URL"
   artifacts:
     name: Deploy Artifacts
     needs: [build, test_alternate_jdks, snapshot_tests, sonar]
@@ -144,6 +149,10 @@ jobs:
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
           ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
           ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+      - name: Notify on failure
+        if: ${{ failure() }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{"blocks":[{"type":"context","elements":[{"type":"mrkdwn","text":":red_circle: [ '${GITHUB_JOB}' ] step failed for commit '"$COMMIT_SHA"'"}]}]}' "$SLACK_WEBHOOK_URL"
   docs:
     name: Deploy Docs
     needs: [build, test_alternate_jdks, snapshot_tests, sonar]
@@ -164,6 +173,10 @@ jobs:
           DOCS_USERNAME: ${{ secrets.DOCS_USERNAME }}
           DOCS_SSH_KEY: ${{ secrets.DOCS_SSH_KEY }}
           DOCS_HOST: ${{ secrets.DOCS_HOST }}
+      - name: Notify on failure
+        if: ${{ failure() }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{"blocks":[{"type":"context","elements":[{"type":"mrkdwn","text":":red_circle: [ '${GITHUB_JOB}' ] step failed for commit '"$COMMIT_SHA"'"}]}]}' "$SLACK_WEBHOOK_URL"
   schema:
     name: Deploy Schema
     needs: [build, test_alternate_jdks, snapshot_tests, sonar]
@@ -184,6 +197,10 @@ jobs:
           DOCS_USERNAME: ${{ secrets.DOCS_USERNAME }}
           DOCS_SSH_KEY: ${{ secrets.DOCS_SSH_KEY }}
           DOCS_HOST: ${{ secrets.DOCS_HOST }}
+      - name: Notify on failure
+        if: ${{ failure() }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{"blocks":[{"type":"context","elements":[{"type":"mrkdwn","text":":red_circle: [ '${GITHUB_JOB}' ] step failed for commit '"$COMMIT_SHA"'"}]}]}' "$SLACK_WEBHOOK_URL"
 #  notify_failure:
 #    name: Notify on build failure
 #    needs: [build, test_alternate_jdks, snapshot_tests, sonar, artifacts, docs, schema]
