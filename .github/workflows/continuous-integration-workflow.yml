@@ -191,6 +191,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Notify on failure
-          if: ${{ failure() }}
-          run: |
-            curl -X POST -H 'Content-type: application/json' --data '{"text": "Build failed for branch '${GITHUB_REF#refs/heads/}'"}' "$SLACK_WEBHOOK_URL"
+        if: ${{ failure() }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{"text": "Build failed for branch '${GITHUB_REF#refs/heads/}'"}' "$SLACK_WEBHOOK_URL"
