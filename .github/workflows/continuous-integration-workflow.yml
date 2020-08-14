@@ -186,7 +186,7 @@ jobs:
   notify_failure:
     name: Notify on build failure
     needs: [build, test_alternate_jdks, snapshot_tests, sonar, artifacts, docs, schema]
-    if: always() && (jobs.build.status == 'failure' || jobs.test_alternate_jdks.status == 'failure' || jobs.snapshot_tests.status == 'failure' || jobs.sonar.status == 'failure' || jobs.artifacts.status == 'failure' || jobs.docs.status == 'failure' || jobs.schema.status == 'failure')
+    if: always() && (job.build.status == 'failure' || job.test_alternate_jdks.status == 'failure' || job.snapshot_tests.status == 'failure' || job.sonar.status == 'failure' || job.artifacts.status == 'failure' || job.docs.status == 'failure' || job.schema.status == 'failure')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
