@@ -21,7 +21,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Notify build start
         run: |
-          echo 'Content-type: application/json' --data '{\"text\":\"Step [ ${GITHUB_JOB} ] started for branch ${GITHUB_REF#refs/heads/}\"}'
+          echo 'Content-type: application/json' --data '{"text": "Step [ '${GITHUB_JOB}' ] started for branch '${GITHUB_REF#refs/heads/}'"}'
+          echo Step [$GITHUB_JOB] started for branch ${GITHUB_REF#refs/heads/}
 #          curl -X POST -H 'Content-type: application/json' --data '{"text":"Build started"}' "$SLACK_WEBHOOK_URL"
         env:
           BRANCH_NAME: ${{ github.ref }}
