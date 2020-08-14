@@ -15,16 +15,21 @@ env:
   COMMIT_OWNER: ${{ github.event.pusher.name }}
 
 jobs:
-  build:
-    name: Build JDK 8
+  notify_start
+    name: Notify Slack of build start
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Notify build start
         run: |
-          echo 'Content-type: application/json' --data '{"text": "Step [ '${GITHUB_JOB}' ] by commit owner '"$COMMIT_OWNER"' started for branch '${GITHUB_REF#refs/heads/}'"}'
+          echo 'Content-type: application/json' --data '{"text": "CI build started for '${GITHUB_REF#refs/heads/}' branch by commit owner '"$COMMIT_OWNER"'"}'
           echo Step [${GITHUB_JOB}] by commit owner "$COMMIT_OWNER" started for branch ${GITHUB_REF#refs/heads/}
-          curl -X POST -H 'Content-type: application/json' --data '{"text": "Build started for branch '${GITHUB_REF#refs/heads/}'"}' "$SLACK_WEBHOOK_URL"
+          curl -X POST -H 'Content-type: application/json' --data 'Content-type: application/json' --data '{"text": "CI build started for '${GITHUB_REF#refs/heads/}' branch by commit owner '"$COMMIT_OWNER"'"}' "$SLACK_WEBHOOK_URL"
+  build:
+    name: Build JDK 8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
       - name: Set up JDK 8
         uses: actions/setup-java@v1
         with:
