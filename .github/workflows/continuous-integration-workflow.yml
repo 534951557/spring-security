@@ -201,14 +201,13 @@ jobs:
         if: ${{ failure() }}
         run: |
           curl -X POST -H 'Content-type: application/json' --data '{"blocks":[{"type":"context","elements":[{"type":"mrkdwn","text":":red_circle: [ '${GITHUB_JOB}' ] step failed for commit '"$COMMIT_SHA"'"}]}]}' "$SLACK_WEBHOOK_URL"
-#  notify_failure:
-#    name: Notify on build failure
-#    needs: [build, test_alternate_jdks, snapshot_tests, sonar, artifacts, docs, schema]
-#    if: always() && (job.build.status == 'failure' || job.test_alternate_jdks.status == 'failure' || job.snapshot_tests.status == 'failure' || job.sonar.status == 'failure' || job.artifacts.status == 'failure' || job.docs.status == 'failure' || job.schema.status == 'failure')
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v2
-#      - name: Notify on failure
-#        if: ${{ failure() }}
-#        run: |
-#          curl -X POST -H 'Content-type: application/json' --data '{"text": "Build failed for branch '${GITHUB_REF#refs/heads/}'"}' "$SLACK_WEBHOOK_URL"
+  notify_success:
+    name: Notify on build success
+    needs: [build, test_alternate_jdks, snapshot_tests, sonar, artifacts, docs, schema]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Notify on success
+        if: ${{ failure() }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{"text": "Build failed for branch '${GITHUB_REF#refs/heads/}'"}' "$SLACK_WEBHOOK_URL"
