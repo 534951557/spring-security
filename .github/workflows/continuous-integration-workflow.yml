@@ -15,8 +15,8 @@ jobs:
     name: Build JDK 8
     runs-on: ubuntu-latest
     steps:
-      - name: Notify build start
       - uses: actions/checkout@v2
+      - name: Notify build start
         run: |
           curl -X POST -H 'Content-type: application/json' --data '{"blocks":[{"type":"header","text":{"type":"plain_text","text":"CI build started for #45","emoji":true}},{"type":"context","elements":[{"type":"plain_text","text":"Author: ${GITHUB_ACTOR}","emoji":true}]}]}' "$SLACK_WEBHOOK_URL"
       - name: Set up JDK 8
