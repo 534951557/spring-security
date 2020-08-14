@@ -9,6 +9,9 @@ on:
 
 env:
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  GRADLE_ENTERPRISE_CACHE_USER: ${{ secrets.GRADLE_ENTERPRISE_CACHE_USER }}
+  GRADLE_ENTERPRISE_CACHE_PASSWORD: ${{ secrets.GRADLE_ENTERPRISE_CACHE_PASSWORD }}
+  GRADLE_ENTERPRISE_SECRET_ACCESS_KEY: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
 
 jobs:
   build:
@@ -34,10 +37,6 @@ jobs:
           export GRADLE_ENTERPRISE_CACHE_PASSWORD="$GRADLE_ENTERPRISE_CACHE_PASSWORD"
           export GRADLE_ENTERPRISE_ACCESS_KEY="$GRADLE_ENTERPRISE_SECRET_ACCESS_KEY"
           ./gradlew clean build --continue
-        env:
-          GRADLE_ENTERPRISE_CACHE_USER: ${{ secrets.GRADLE_ENTERPRISE_CACHE_USER }}
-          GRADLE_ENTERPRISE_CACHE_PASSWORD: ${{ secrets.GRADLE_ENTERPRISE_CACHE_PASSWORD }}
-          GRADLE_ENTERPRISE_SECRET_ACCESS_KEY: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
       - name: Notify on failure
         if: ${{ failure() }}
         run: |
@@ -66,10 +65,6 @@ jobs:
           export GRADLE_ENTERPRISE_CACHE_PASSWORD="$GRADLE_ENTERPRISE_CACHE_PASSWORD"
           export GRADLE_ENTERPRISE_ACCESS_KEY="$GRADLE_ENTERPRISE_SECRET_ACCESS_KEY"
           ./gradlew test --stacktrace
-        env:
-          GRADLE_ENTERPRISE_CACHE_USER: ${{ secrets.GRADLE_ENTERPRISE_CACHE_USER }}
-          GRADLE_ENTERPRISE_CACHE_PASSWORD: ${{ secrets.GRADLE_ENTERPRISE_CACHE_PASSWORD }}
-          GRADLE_ENTERPRISE_SECRET_ACCESS_KEY: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
   snapshot_tests:
     name: Test against snapshots
     runs-on: ubuntu-latest
@@ -85,10 +80,6 @@ jobs:
           export GRADLE_ENTERPRISE_CACHE_PASSWORD="$GRADLE_ENTERPRISE_CACHE_PASSWORD"
           export GRADLE_ENTERPRISE_ACCESS_KEY="$GRADLE_ENTERPRISE_SECRET_ACCESS_KEY"
           ./gradlew test --refresh-dependencies -PforceMavenRepositories=snapshot -PspringVersion='5.+' -PreactorVersion='20+' -PspringDataVersion='Lovelace-BUILD-SNAPSHOT' -PrsocketVersion=1.1.0-SNAPSHOT -PspringBootVersion=2.4.0-SNAPSHOT -PlocksDisabled --stacktrace
-        env:
-          GRADLE_ENTERPRISE_CACHE_USER: ${{ secrets.GRADLE_ENTERPRISE_CACHE_USER }}
-          GRADLE_ENTERPRISE_CACHE_PASSWORD: ${{ secrets.GRADLE_ENTERPRISE_CACHE_PASSWORD }}
-          GRADLE_ENTERPRISE_SECRET_ACCESS_KEY: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
   sonar:
     name: Static Code Analysis
     runs-on: ubuntu-latest
@@ -109,9 +100,6 @@ jobs:
         env:
           SONAR_URL: ${{ secrets.SONAR_URL }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GRADLE_ENTERPRISE_CACHE_USER: ${{ secrets.GRADLE_ENTERPRISE_CACHE_USER }}
-          GRADLE_ENTERPRISE_CACHE_PASSWORD: ${{ secrets.GRADLE_ENTERPRISE_CACHE_PASSWORD }}
-          GRADLE_ENTERPRISE_SECRET_ACCESS_KEY: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
       - name: Run Sonar on master
         if: ${{ github.ref == 'refs/heads/master' }}
         run: |
@@ -122,9 +110,6 @@ jobs:
         env:
           SONAR_URL: ${{ secrets.SONAR_URL }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GRADLE_ENTERPRISE_CACHE_USER: ${{ secrets.GRADLE_ENTERPRISE_CACHE_USER }}
-          GRADLE_ENTERPRISE_CACHE_PASSWORD: ${{ secrets.GRADLE_ENTERPRISE_CACHE_PASSWORD }}
-          GRADLE_ENTERPRISE_SECRET_ACCESS_KEY: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
   artifacts:
     name: Deploy Artifacts
     needs: [build, test_alternate_jdks, snapshot_tests, sonar]
@@ -151,9 +136,6 @@ jobs:
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
           ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
           ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
-          GRADLE_ENTERPRISE_CACHE_USER: ${{ secrets.GRADLE_ENTERPRISE_CACHE_USER }}
-          GRADLE_ENTERPRISE_CACHE_PASSWORD: ${{ secrets.GRADLE_ENTERPRISE_CACHE_PASSWORD }}
-          GRADLE_ENTERPRISE_SECRET_ACCESS_KEY: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
   docs:
     name: Deploy Docs
     needs: [build, test_alternate_jdks, snapshot_tests, sonar]
@@ -174,9 +156,6 @@ jobs:
           DOCS_USERNAME: ${{ secrets.DOCS_USERNAME }}
           DOCS_SSH_KEY: ${{ secrets.DOCS_SSH_KEY }}
           DOCS_HOST: ${{ secrets.DOCS_HOST }}
-          GRADLE_ENTERPRISE_CACHE_USER: ${{ secrets.GRADLE_ENTERPRISE_CACHE_USER }}
-          GRADLE_ENTERPRISE_CACHE_PASSWORD: ${{ secrets.GRADLE_ENTERPRISE_CACHE_PASSWORD }}
-          GRADLE_ENTERPRISE_SECRET_ACCESS_KEY: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
   schema:
     name: Deploy Schema
     needs: [build, test_alternate_jdks, snapshot_tests, sonar]
@@ -197,6 +176,3 @@ jobs:
           DOCS_USERNAME: ${{ secrets.DOCS_USERNAME }}
           DOCS_SSH_KEY: ${{ secrets.DOCS_SSH_KEY }}
           DOCS_HOST: ${{ secrets.DOCS_HOST }}
-          GRADLE_ENTERPRISE_CACHE_USER: ${{ secrets.GRADLE_ENTERPRISE_CACHE_USER }}
-          GRADLE_ENTERPRISE_CACHE_PASSWORD: ${{ secrets.GRADLE_ENTERPRISE_CACHE_PASSWORD }}
-          GRADLE_ENTERPRISE_SECRET_ACCESS_KEY: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
