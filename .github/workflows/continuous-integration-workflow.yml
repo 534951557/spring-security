@@ -22,7 +22,7 @@ jobs:
       - name: Notify build start
         run: |
           echo 'Content-type: application/json' --data '{"text": "Step [ '${GITHUB_JOB}' ] started for branch '${GITHUB_REF#refs/heads/}'"}'
-          echo Step [$GITHUB_JOB] started for branch ${GITHUB_REF#refs/heads/}
+          echo Step [${GITHUB_JOB}] with name ${JOB_NAME} and number ${GITHUB_EVENT_PATH} started for branch ${GITHUB_REF#refs/heads/}
           curl -X POST -H 'Content-type: application/json' --data '{"text": "Build started for branch '${GITHUB_REF#refs/heads/}'"}' "$SLACK_WEBHOOK_URL"
       - name: Set up JDK 8
         uses: actions/setup-java@v1
