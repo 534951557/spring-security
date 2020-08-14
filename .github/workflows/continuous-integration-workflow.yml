@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Notify build start
         run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"blocks":[{"type":"header","text":{"type":"plain_text","text":"Build started for commit '"${COMMIT_SHA:0:9}"'"}},{"type":"section","text":{"type":"mrkdwn","text":"— _Author: '"$COMMIT_OWNER"'_"}}]}' "$SLACK_WEBHOOK_URL"
+          curl -X POST -H 'Content-type: application/json' --data '{"blocks":[{"type":"header","text":{"type":"plain_text","text":"Build started for commit '"${COMMIT_SHA:0:9}"'"}},{"type":"section","text":{"type":"mrkdwn","text":"— _Author: '"$COMMIT_OWNER"'_"}},{"type":"divider"}]}' "$SLACK_WEBHOOK_URL"
       - name: Set up JDK 8
         uses: actions/setup-java@v1
         with:
